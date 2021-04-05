@@ -17,7 +17,7 @@ CLANG		=		c++
 FLAGS		=		-stdlib=libc++ -lsfml-graphics -lsfml-window -lsfml-system
 RM			=		rm -rf
 
-all:				$(NAME)
+all:				flex $(NAME)
 
 $(PATH_OBJ)%.o:		$(PATH_SRC)%.cpp
 					@mkdir -p $(PATH_OBJ)
@@ -27,6 +27,14 @@ $(PATH_OBJ)%.o:		$(PATH_SRC)%.cpp
 $(NAME):			$(OBJ)
 					@$(CLANG) $(FLAGS) -o $(NAME) $(OBJ)
 					@echo "$(YELLOW)Tetris  \t:\t$(GREEN)[OK]$(WHITE)"
+
+flex:
+					@echo "$(PURPLE).------..------..------..------..------."
+					@echo "|T.--. ||E.--. ||R.--. ||R.--. ||Y.--. |"
+					@echo "| :/\: || (\/) || :(): || :(): || (\/) |"
+					@echo "| (__) || :\/: || ()() || ()() || :\/: |"
+					@echo "| '--'T|| '--'E|| '--'R|| '--'R|| '--'Y|"
+					@echo "\`------'\`------'\`------'\`------'\`------'$(WHITE)"
 
 clean:
 					@$(RM) $(PATH_OBJ)
