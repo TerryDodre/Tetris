@@ -22,7 +22,7 @@ struct 	Point
 	int x, y;
 };
 
-Point	now[4], save[4];
+Point	now[4], save[4], next[4];
 
 bool	check(void)
 {
@@ -62,29 +62,50 @@ void		generatePiece(int *colorNum)
 	}
 }
 
+void		nextPiece(int *colorNext)
+{
+	rand();
+	int		randPiece;
+	randPiece = rand() % 7;
+	(*colorNext) = 1 + randPiece;
+	for (int i = 0; i < 4; i++)
+	{
+		int pos = figures[randPiece][i];
+		while (pos > 3)
+			pos = pos - 4;
+		next[i].x = pos + 3;
+		next[i].y = figures[randPiece][i] / 4;
+	}
+}
+
 int			main(void)
 {
-	RenderWindow	window(VideoMode(750, 1000), "TETRIS");
+	RenderWindow	window(VideoMode(900, 1200), "TETRIS");
 	Texture			texTile, texBackground;
 	texTile.loadFromFile("assets/tiles.png");
-	texBackground.loadFromFile("assets/background.png");
+	texBackground.loadFromFile("assets/background.jpg");
 	Sprite			sTile(texTile), sBackground(texBackground);
-	float			x = (float)750 / 480;
+	float			x = (float)900 / 600;
 	sBackground.setScale(x, x);
 	sTile.setScale(x, x);
-	int				direction = 0, colorNum = 0;
+	float	y = x;
+	x = 32 * x;
+	int				direction = 0, colorNum = 0, colorNext = 0;
 	float			timer = 0, delay = 0.3;
 	bool			rotate = 0;
 	Clock			clock;
 	srand(time(NULL));
 	rand();
 	generatePiece(&colorNum);
+	nextPiece(&colorNext);
 
 	while (window.isOpen())
 	{
 		float		time = clock.getElapsedTime().asSeconds();
 		clock.restart();
 		timer += time;
+		rand();
+		int		randPiece = rand() % 7;
 
 		Event		press;
 		while (window.pollEvent(press))
@@ -157,7 +178,13 @@ int			main(void)
 			{
 				for (int i = 0; i < 4; i++)
 					field[save[i].y][save[i].x]=colorNum;
-				generatePiece(&colorNum);
+				for (size_t i = 0; i < 4; i++)
+				{
+					now[i].x = next[i].x;
+					now[i].y = next[i].y;
+					colorNum = colorNext;
+				}
+				nextPiece(&colorNext);
 			}
 			timer = 0;
 		}
@@ -188,7 +215,8 @@ int			main(void)
 				if (field[i][j] == 0)
 					continue;
 				sTile.setTextureRect(IntRect(field[i][j]*32,0,32,32));
-				sTile.setPosition(j*50,i*50);
+				sTile.setPosition(j*x,i*x);
+				sTile.move(32 * y, 128 * y); //offset
 				window.draw(sTile);
 			}
 		}
@@ -196,9 +224,32 @@ int			main(void)
 		for (int i = 0; i < 4; i++)
 		{
 			sTile.setTextureRect(IntRect(colorNum*32,0,32,32)); // choice color
-			sTile.setPosition(now[i].x * 50, now[i].y * 50);
+			sTile.setPosition(now[i].x * x, now[i].y * x);
+			sTile.move(32 * y, 128 * y); //offset
 			window.draw(sTile);
 		}
+
+		for (size_t i = 0; i < 4; i++)
+		{
+			sTile.setTextureRect(IntRect(colorNext*32,0,32,32));
+			sTile.setPosition(next[i].x * x, next[i].y * x);
+			if (colorNext == 1)
+				sTile.move(335 * y, 190 * y); //offset
+			else if (colorNext == 2)
+				sTile.move(335 * y, 225 * y);
+			else if (colorNext == 3)
+				sTile.move(335 * y, 225 * y);
+			else if (colorNext == 4)
+				sTile.move(335 * y, 220 * y);
+			else if (colorNext == 5)
+				sTile.move(335 * y, 220 * y);
+			else if (colorNext == 6)
+				sTile.move(335 * y, 220 * y);
+			else if (colorNext == 7)
+				sTile.move(323 * y, 225 * y);
+			window.draw(sTile);
+		}
+		
 
 		window.display();
 	}
